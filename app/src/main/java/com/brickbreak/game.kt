@@ -2,7 +2,9 @@ package com.brickbreak
 import android.media.MediaPlayer
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -21,6 +23,7 @@ import java.util.Random
 
 
 class game : AppCompatActivity() {
+
     private lateinit var scoreText: TextView
     private lateinit var paddle: View
     private lateinit var ball: View
@@ -37,31 +40,34 @@ class game : AppCompatActivity() {
     private var score = 0
 
 
-    private val brickRows = 10
+    private val brickRows = 1
 
-    private val brickColumns = 20
-    private val brickWidth = 60
-    private val brickHeight = 60
+    private val brickColumns = 15
+    private val brickWidth = 80
+    private val brickHeight = 80
     private val brickMargin = 4
 
     private var isBallLaunched = false
 
     private var lives = 3
 
-
+//    private lateinit var bgmusic: MediaPlayer
     private lateinit var brickHitSoundPlayer: MediaPlayer
     private lateinit var paddleHitSoundPlayer: MediaPlayer
-
+    private lateinit var sharedPreferences: SharedPreferences
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_game)
 
+        sharedPreferences = getSharedPreferences("com.brickbreak.preferences", Context.MODE_PRIVATE)
+
         // Initialize MediaPlayer objects
+       // bgmusic = MediaPlayer.create(this, R.raw.background_music)
         brickHitSoundPlayer = MediaPlayer.create(this, R.raw.brick_hit_sound)
         paddleHitSoundPlayer = MediaPlayer.create(this, R.raw.paddle_hit_sound)
-
+       // bgmusic.isLooping = true
         scoreText = findViewById(R.id.scoreText)
         paddle = findViewById(R.id.paddle)
         ball = findViewById(R.id.ball)
@@ -109,7 +115,12 @@ class game : AppCompatActivity() {
         }
     }
 
+    private var isGameOverStarted = false
 
+
+    private fun isSoundOn(): Boolean {
+        return sharedPreferences.getBoolean("sound", true)
+    }
 
     private fun moveBall() {
         ballX += ballSpeedX
@@ -139,13 +150,14 @@ class game : AppCompatActivity() {
         }
 
         // Check collision with paddle
-        if (ballY + ball.height >= paddle.y && ballY + ball.height <= paddle.y + paddle.height
+        if (ballY + ball.height >= paddle.y && ballY <= paddle.y + paddle.height
             && ballX + ball.width >= paddle.x && ballX <= paddle.x + paddle.width
+            && ballSpeedY > 0  // Ensure the ball is moving downward
         ) {
             ballSpeedY *= -1
             score++
             scoreText.text = "$score"
-            paddleHitSoundPlayer.start() // Play the paddle hit sound
+            if (isSoundOn()) paddleHitSoundPlayer.start() else paddleHitSoundPlayer.pause()  // Play the paddle hit sound
         }
 
 
@@ -179,7 +191,7 @@ class game : AppCompatActivity() {
                         ballSpeedY *= -1
                         score++
                         scoreText.text = "$score"
-                        brickHitSoundPlayer.start() // Play the brick hit sound
+                        if (isSoundOn())brickHitSoundPlayer.start() else brickHitSoundPlayer.pause()// Play the brick hit sound
                         return  // Exit the function after finding a collision with a brick
                     }
                 }
@@ -211,17 +223,34 @@ class game : AppCompatActivity() {
 
 
             }
+            var bricksRemaining = 0  // Move the declaration here
+
+            for (row in 0 until brickRows) {
+                val rowLayout = brickContainer.getChildAt(row) as LinearLayout
+
+                for (col in 0 until brickColumns) {
+                    val brick = rowLayout.getChildAt(col) as View
+
+                    if (brick.visibility == View.VISIBLE) {
+                        bricksRemaining++
+                    }
+                }
+            }
 
             if (lives <= 0) {
                 // Game over condition: No more lives left
                 gameOver(score)
+            } else if (bricksRemaining == 0) {
+                // All bricks destroyed, player wins the game
+                gameWin()
             } else {
                 // Reset the ball to its initial position
                 resetBallPosition()
                 start()
-
             }
         }
+
+
 
     }
     private fun updateHeartsDisplay() {
@@ -276,28 +305,23 @@ class game : AppCompatActivity() {
     }
 
 
-//    private fun gameOver() {
-//        // Display a game over message or perform other actions
-//
-//        score = 0
-//        setContentView(R.layout.activity_gameover)
-//       // val newgame = findViewById<Button>(R.id.newgame)
-//
-//        //newgame.visibility = View.VISIBLE
-//
-//
-//
-//
-//        // Reset any other game-related properties as needed
-//    }
-
-    private var isGameOverStarted = false
-
     private fun gameOver(score: Int) {
         if (!isGameOverStarted) {
             isGameOverStarted = true
+
+            // Retrieve the maximum score from SharedPreferences
+            val maxScore = sharedPreferences.getInt("maxScore", 0)
+
+            // Check if the current score is greater than the maximum score
+            if (score > maxScore) {
+                // Update the maximum score in SharedPreferences
+                sharedPreferences.edit().putInt("maxScore", score).apply()
+            }
+
+            // Start the gameover activity
             val intent = Intent(this, gameover::class.java)
-            intent.putExtra("SCORE", score) // Use "SCORE" as the key
+            intent.putExtra("SCORE", score) // Pass the current score
+            intent.putExtra("MAX_SCORE", maxScore) // Pass the maximum score
             startActivity(intent)
             finish()
         }
@@ -307,10 +331,21 @@ class game : AppCompatActivity() {
 
 
 
-
-
     private fun gameWin() {
 
+            var bricksRemaining = 0
+
+            for (row in 0 until brickRows) {
+                val rowLayout = brickContainer.getChildAt(row) as LinearLayout
+
+                for (col in 0 until brickColumns) {
+                    val brick = rowLayout.getChildAt(col) as View
+
+                    if (brick.visibility == View.VISIBLE) {
+                        bricksRemaining++
+                    }
+                }
+            }
 
     }
 
@@ -345,7 +380,7 @@ class game : AppCompatActivity() {
 
         val screenWidth = displayMetrics.widthPixels.toFloat()
         val screenHeight = displayMetrics.heightPixels.toFloat()
-
+        //if (isSoundOn())bgmusic.start() else bgmusic.pause()
         paddleX = screenWidth / 2 - paddle.width / 2
         paddle.x = paddleX
 
@@ -364,6 +399,7 @@ class game : AppCompatActivity() {
         val animator = ValueAnimator.ofFloat(0f, 1f)
         animator.duration = Long.MAX_VALUE
         animator.interpolator = LinearInterpolator()
+
         animator.addUpdateListener { animation ->
             moveBall()
             checkCollision()

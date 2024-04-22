@@ -18,7 +18,10 @@ import androidx.activity.enableEdgeToEdge
 
 class play : AppCompatActivity() {
 
-    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var musicMediaPlayer: MediaPlayer
+    private lateinit var soundMediaPlayer1: MediaPlayer
+    private lateinit var soundMediaPlayer2: MediaPlayer
+
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,14 +33,17 @@ class play : AppCompatActivity() {
         sharedPreferences = getSharedPreferences("com.brickbreak.preferences", Context.MODE_PRIVATE)
 
         // Initialize MediaPlayer
-        mediaPlayer = MediaPlayer.create(this, R.raw.background_music)
-        mediaPlayer.isLooping = true
+        musicMediaPlayer = MediaPlayer.create(this, R.raw.background_music)
+        soundMediaPlayer1 =  MediaPlayer.create(this, R.raw.brick_hit_sound)
+        soundMediaPlayer2 =  MediaPlayer.create(this, R.raw.paddle_hit_sound)
+
+        musicMediaPlayer.isLooping = true
 
         val btnNavigate: ImageView = findViewById(R.id.play)
-        btnNavigate.postDelayed({
+        btnNavigate.setOnClickListener {
             startActivity(Intent(this, game::class.java))
             finish()
-        }, 4000L)
+        }
 
         val settingsButton: ImageView = findViewById(R.id.settings)
         settingsButton.setOnClickListener {
@@ -55,30 +61,23 @@ class play : AppCompatActivity() {
         val soundSwitch = dialog.findViewById<SwitchCompat>(R.id.sound)
 
         // Set initial state of switches based on saved preferences
-        musicSwitch.isChecked = isMusicOn()
+
         soundSwitch.isChecked = isSoundOn()
 
         musicSwitch.setOnCheckedChangeListener { _, isChecked ->
             // Save the state of the music switch
             saveMusicSetting(isChecked)
             // Pause or resume the MediaPlayer based on the state of the music switch
-            if (isChecked) {
-                mediaPlayer.start()
+            if (isMusicOn()) {
+                musicMediaPlayer.start()
             } else {
-                mediaPlayer.pause()
+                musicMediaPlayer.pause()
             }
         }
 
         soundSwitch.setOnCheckedChangeListener { _, isChecked ->
             // Save the state of the sound switch
             saveSoundSetting(isChecked)
-            if (isChecked) {
-                // If sound is on, set volume to full
-                mediaPlayer.setVolume(1f, 1f)
-            } else {
-                // If sound is off, mute both music and sound
-                mediaPlayer.setVolume(0f, 0f)
-            }
         }
 
         // Adjust dialog width and height if needed
@@ -92,9 +91,9 @@ class play : AppCompatActivity() {
     }
 
     private fun saveMusicSetting(isMusicOn: Boolean) {
-        sharedPreferences.edit {
-            putBoolean("music", isMusicOn)
-        }
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("music", isMusicOn)
+        editor.apply()
     }
 
     private fun isMusicOn(): Boolean {
@@ -102,8 +101,23 @@ class play : AppCompatActivity() {
     }
 
     private fun saveSoundSetting(isSoundOn: Boolean) {
-        sharedPreferences.edit {
-            putBoolean("sound", isSoundOn)
+        // Save the state of the sound switch to SharedPreferences
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("sound", isSoundOn)
+        editor.apply()
+        // Update the state of sound players based on the switch state
+        updateSoundPlayers(isSoundOn)
+    }
+
+    private fun updateSoundPlayers(isSoundOn: Boolean) {
+        if (isSoundOn) {
+            // If sound is on, start the sound effect players
+            soundMediaPlayer1.start()
+            soundMediaPlayer2.start()
+        } else {
+            // If sound is off, pause the sound effect players
+            soundMediaPlayer1.pause()
+            soundMediaPlayer2.pause()
         }
     }
 
