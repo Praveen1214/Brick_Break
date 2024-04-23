@@ -115,14 +115,14 @@
 
     <ImageView
         android:id="@+id/imageView14"
-        android:layout_width="57dp"
-        android:layout_height="55dp"
+        android:layout_width="45dp"
+        android:layout_height="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.946"
+        app:layout_constraintHorizontal_bias="0.939"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.04"
+        app:layout_constraintVertical_bias="0.058"
         app:srcCompat="@drawable/exit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

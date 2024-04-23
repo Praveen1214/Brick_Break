@@ -223,7 +223,7 @@ class game : AppCompatActivity() {
 
 
             }
-            var bricksRemaining = 0  // Move the declaration here
+            var bricksRemaining = 150  // Move the declaration here
 
             for (row in 0 until brickRows) {
                 val rowLayout = brickContainer.getChildAt(row) as LinearLayout
@@ -232,7 +232,7 @@ class game : AppCompatActivity() {
                     val brick = rowLayout.getChildAt(col) as View
 
                     if (brick.visibility == View.VISIBLE) {
-                        bricksRemaining++
+                        bricksRemaining--
                     }
                 }
             }
@@ -242,7 +242,7 @@ class game : AppCompatActivity() {
                 gameOver(score)
             } else if (bricksRemaining == 0) {
                 // All bricks destroyed, player wins the game
-                gameWin()
+                setContentView(R.layout.activity_gameover)
             } else {
                 // Reset the ball to its initial position
                 resetBallPosition()
