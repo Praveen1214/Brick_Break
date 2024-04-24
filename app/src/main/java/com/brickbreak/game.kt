@@ -40,7 +40,7 @@ class game : AppCompatActivity() {
     private var score = 0
 
 
-    private val brickRows = 1
+    private val brickRows = 10
 
     private val brickColumns = 15
     private val brickWidth = 80
@@ -52,6 +52,7 @@ class game : AppCompatActivity() {
     private var lives = 3
 
 //    private lateinit var bgmusic: MediaPlayer
+    private lateinit var bgmusic : MediaPlayer
     private lateinit var brickHitSoundPlayer: MediaPlayer
     private lateinit var paddleHitSoundPlayer: MediaPlayer
     private lateinit var sharedPreferences: SharedPreferences
@@ -59,27 +60,56 @@ class game : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContentView(R.layout.activity_game)
+        val quitBtn: ImageView = findViewById(R.id.quitBtn)
+        quitBtn.setOnClickListener {
+            // Exit the game
+            finish() // This will close the current activity and exit the game
+        }
 
         sharedPreferences = getSharedPreferences("com.brickbreak.preferences", Context.MODE_PRIVATE)
 
-        // Initialize MediaPlayer objects
-       // bgmusic = MediaPlayer.create(this, R.raw.background_music)
+        bgmusic = MediaPlayer.create(this, R.raw.background_music)
         brickHitSoundPlayer = MediaPlayer.create(this, R.raw.brick_hit_sound)
         paddleHitSoundPlayer = MediaPlayer.create(this, R.raw.paddle_hit_sound)
-       // bgmusic.isLooping = true
+        bgmusic.isLooping = true
         scoreText = findViewById(R.id.scoreText)
         paddle = findViewById(R.id.paddle)
         ball = findViewById(R.id.ball)
         brickContainer = findViewById(R.id.brickContainer)
         initializeBricks()
         start()
+
+        if (isMusicOn()) {
+            bgmusic.start()
+        }
+
+
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        bgmusic.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isMusicOn()) {
+            bgmusic.start()
+        }
+    }
+    private fun isMusicOn(): Boolean {
+        return sharedPreferences.getBoolean("music", true)
     }
 
 
     private fun initializeBricks() {
         val brickWidthWithMargin = (brickWidth + brickMargin).toInt()
         val random = Random()
+
+
 
         // Define an array of three colors
         val colors = arrayOf(
@@ -110,6 +140,8 @@ class game : AppCompatActivity() {
 
                 rowLayout.addView(brick)
             }
+
+
 
             brickContainer.addView(rowLayout)
         }
@@ -157,8 +189,10 @@ class game : AppCompatActivity() {
             ballSpeedY *= -1
             score++
             scoreText.text = "$score"
+
             if (isSoundOn()) paddleHitSoundPlayer.start() else paddleHitSoundPlayer.pause()  // Play the paddle hit sound
         }
+
 
 
         // Check collision with bottom wall (paddle misses the ball)
@@ -405,6 +439,10 @@ class game : AppCompatActivity() {
             checkCollision()
         }
         animator.start()
+
+
     }
+
+
 
 }

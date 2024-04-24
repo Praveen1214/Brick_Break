@@ -46,6 +46,13 @@ class gameover : AppCompatActivity() {
         restartbtn.setOnClickListener {
             startActivity(Intent(this, game::class.java))
         }
+
+        val quitbtn: ImageView = findViewById(R.id.quit)
+        quitbtn.setOnClickListener {
+            // Exit the game
+            finish() // This will close the current activity and exit the game
+        }
+
     }
 
 }

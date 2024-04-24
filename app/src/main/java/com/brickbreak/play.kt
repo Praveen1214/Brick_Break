@@ -94,6 +94,8 @@ class play : AppCompatActivity() {
         val editor = sharedPreferences.edit()
         editor.putBoolean("music", isMusicOn)
         editor.apply()
+        updateSoundPlayer(isMusicOn)
+
     }
 
     private fun isMusicOn(): Boolean {
@@ -120,6 +122,21 @@ class play : AppCompatActivity() {
             soundMediaPlayer2.pause()
         }
     }
+
+    private fun updateSoundPlayer(isSoundOn: Boolean) {
+        if (isSoundOn) {
+            // If sound is on, start the sound effect players
+            musicMediaPlayer .start()
+
+        } else {
+            // If sound is off, pause the sound effect players
+            musicMediaPlayer.pause()
+
+        }
+    }
+
+
+
 
     private fun isSoundOn(): Boolean {
         return sharedPreferences.getBoolean("sound", true)
