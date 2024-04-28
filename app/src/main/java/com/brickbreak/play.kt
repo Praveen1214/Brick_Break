@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.edit
@@ -57,16 +58,21 @@ class play : AppCompatActivity() {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.activity_popup)
 
-        val musicSwitch = dialog.findViewById<SwitchCompat>(R.id.music)
-        val soundSwitch = dialog.findViewById<SwitchCompat>(R.id.sound)
+        val musicSwitch : Switch = dialog.findViewById(R.id.music)
+
+        val soundSwitch : Switch = dialog.findViewById(R.id.sound)
+
 
         // Set initial state of switches based on saved preferences
 
         soundSwitch.isChecked = isSoundOn()
 
+        musicSwitch.isChecked = isMusicOn()
+
         musicSwitch.setOnCheckedChangeListener { _, isChecked ->
             // Save the state of the music switch
-            saveMusicSetting(isChecked)
+            saveMusicSetting(
+                isChecked)
             // Pause or resume the MediaPlayer based on the state of the music switch
             if (isMusicOn()) {
                 musicMediaPlayer.start()
@@ -94,51 +100,43 @@ class play : AppCompatActivity() {
         val editor = sharedPreferences.edit()
         editor.putBoolean("music", isMusicOn)
         editor.apply()
-        updateSoundPlayer(isMusicOn)
-
-    }
-
-    private fun isMusicOn(): Boolean {
-        return sharedPreferences.getBoolean("music", true)
+        updateMusicPlayer(isMusicOn) // Corrected function call
     }
 
     private fun saveSoundSetting(isSoundOn: Boolean) {
-        // Save the state of the sound switch to SharedPreferences
         val editor = sharedPreferences.edit()
         editor.putBoolean("sound", isSoundOn)
         editor.apply()
-        // Update the state of sound players based on the switch state
         updateSoundPlayers(isSoundOn)
     }
 
     private fun updateSoundPlayers(isSoundOn: Boolean) {
         if (isSoundOn) {
-            // If sound is on, start the sound effect players
             soundMediaPlayer1.start()
             soundMediaPlayer2.start()
         } else {
-            // If sound is off, pause the sound effect players
             soundMediaPlayer1.pause()
             soundMediaPlayer2.pause()
         }
     }
 
-    private fun updateSoundPlayer(isSoundOn: Boolean) {
-        if (isSoundOn) {
-            // If sound is on, start the sound effect players
-            musicMediaPlayer .start()
-
+    private fun updateMusicPlayer(isMusicOn: Boolean) {
+        if (isMusicOn) {
+            musicMediaPlayer.start()
         } else {
-            // If sound is off, pause the sound effect players
             musicMediaPlayer.pause()
-
         }
     }
-
 
 
 
     private fun isSoundOn(): Boolean {
         return sharedPreferences.getBoolean("sound", true)
     }
+
+    private fun isMusicOn(): Boolean {
+        return sharedPreferences.getBoolean("music", true)
+    }
+
+
 }

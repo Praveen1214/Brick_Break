@@ -1,24 +1,22 @@
 package com.brickbreak
-import android.media.MediaPlayer
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.brickbreak.R
-import android.graphics.Color
-import android.util.Log
-import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import java.util.Random
 
 
@@ -42,9 +40,9 @@ class game : AppCompatActivity() {
 
     private val brickRows = 10
 
-    private val brickColumns = 15
-    private val brickWidth = 80
-    private val brickHeight = 80
+    private val brickColumns = 14
+    private val brickWidth = 90
+    private val brickHeight = 90
     private val brickMargin = 4
 
     private var isBallLaunched = false
@@ -56,17 +54,30 @@ class game : AppCompatActivity() {
     private lateinit var brickHitSoundPlayer: MediaPlayer
     private lateinit var paddleHitSoundPlayer: MediaPlayer
     private lateinit var sharedPreferences: SharedPreferences
+
+    private var btnPlay: ImageView? = null
+    private var btnResume: ImageView? = null
+    private var isPaused = false
+    private lateinit var animator: ValueAnimator
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContentView(R.layout.activity_game)
-        val quitBtn: ImageView = findViewById(R.id.quitBtn)
-        quitBtn.setOnClickListener {
-            // Exit the game
-            finish() // This will close the current activity and exit the game
-        }
+
+        btnPlay = findViewById(R.id.playBtn)
+        btnResume = findViewById(R.id.resumBtn)
+
+
+        btnPlay?.setOnClickListener { pauseGame() }
+        btnResume?.setOnClickListener { resumeGame() }
+
+
+
+
+
+
 
         sharedPreferences = getSharedPreferences("com.brickbreak.preferences", Context.MODE_PRIVATE)
 
@@ -81,25 +92,47 @@ class game : AppCompatActivity() {
         initializeBricks()
         start()
 
-        if (isMusicOn()) {
-            bgmusic.start()
+
+    }
+
+    private fun pauseGame() {
+        isPaused = true
+       // Pause the background music
+        animator.pause() // Pause the animation
+        btnPlay?.visibility = View.GONE
+        btnResume?.visibility = View.VISIBLE
+    }
+
+
+
+
+    private fun resumeGame() {
+        isPaused = false
+        // Start or resume the background music
+        animator.resume() // Resume the animation
+        btnPlay?.visibility = View.VISIBLE
+        btnResume?.visibility = View.GONE
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        if (!isPaused) {
+            animator.start()
+            // Check if music is turned on and start playing if so
+            if (isMusicOn()) {
+                bgmusic.start()
+            }
         }
-
-
-
     }
 
     override fun onPause() {
         super.onPause()
+        animator.pause()
+        // Pause the background music
         bgmusic.pause()
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (isMusicOn()) {
-            bgmusic.start()
-        }
-    }
     private fun isMusicOn(): Boolean {
         return sharedPreferences.getBoolean("music", true)
     }
@@ -154,6 +187,17 @@ class game : AppCompatActivity() {
         return sharedPreferences.getBoolean("sound", true)
     }
 
+
+    private fun toggleMusic(isOn: Boolean) {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("music", isOn)
+        editor.apply()
+        if (isOn) {
+            bgmusic.start()
+        } else {
+            bgmusic.pause()
+        }
+    }
     private fun moveBall() {
         ballX += ballSpeedX
         ballY += ballSpeedY
@@ -339,6 +383,7 @@ class game : AppCompatActivity() {
     }
 
 
+
     private fun gameOver(score: Int) {
         if (!isGameOverStarted) {
             isGameOverStarted = true
@@ -415,10 +460,10 @@ class game : AppCompatActivity() {
         val screenWidth = displayMetrics.widthPixels.toFloat()
         val screenHeight = displayMetrics.heightPixels.toFloat()
         //if (isSoundOn())bgmusic.start() else bgmusic.pause()
-        paddleX = screenWidth / 2 - paddle.width / 2
-        paddle.x = paddleX
-
-        ballX = paddleX + paddle.width / 2 - ball.width / 2
+//        paddleX = screenWidth / 2 - paddle.width / 2
+//        paddle.x = paddleX
+//
+       ballX = paddleX + paddle.width / 2 - ball.width / 2
         ballY = screenHeight - 600  // Adjust as needed
 
         ball.x = ballX
@@ -430,7 +475,7 @@ class game : AppCompatActivity() {
         ballSpeedX = 2 * screenDensity
         ballSpeedY = -3 * screenDensity
 
-        val animator = ValueAnimator.ofFloat(0f, 1f)
+        animator = ValueAnimator.ofFloat(0f, 1f)  // Initialize the property instead of creating a new variable
         animator.duration = Long.MAX_VALUE
         animator.interpolator = LinearInterpolator()
 
@@ -439,9 +484,8 @@ class game : AppCompatActivity() {
             checkCollision()
         }
         animator.start()
-
-
     }
+
 
 
 

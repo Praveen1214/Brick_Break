@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="360dp"
+    android:layout_width="340dp"
     android:layout_height="340dp"
     android:background="@drawable/window"
     android:orientation="vertical"
@@ -12,8 +12,8 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="42dp"
+        android:layout_height="40dp"
         android:src="@drawable/close_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,20 +69,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.706" />
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/music"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:thumb="@drawable/off_slide_button"
-        android:track="@drawable/slide_bar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.709"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.34" />
 
-    <androidx.appcompat.widget.SwitchCompat
+
+    <Switch
         android:id="@+id/sound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -90,10 +79,23 @@
         android:track="@drawable/slide_bar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.709"
+        app:layout_constraintHorizontal_bias="0.743"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.733" />
+        app:layout_constraintVertical_bias="0.704" />
+
+    <Switch
+        android:id="@+id/music"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:thumb="@drawable/off_slide_button"
+        android:track="@drawable/slide_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.743"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.341" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

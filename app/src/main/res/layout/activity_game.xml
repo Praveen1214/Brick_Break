@@ -108,7 +108,7 @@
         tools:ignore="MissingConstraints" />
 
     <ImageView
-        android:id="@+id/quitBtn"
+        android:id="@+id/resumBtn"
         android:layout_width="48dp"
         android:layout_height="70dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -118,6 +118,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.044"
         app:srcCompat="@drawable/pause" />
+
+
+    <ImageView
+        android:id="@+id/playBtn"
+        android:layout_width="48dp"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.909"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.044"
+        app:srcCompat="@drawable/playbtn"
+        android:visibility="gone"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
