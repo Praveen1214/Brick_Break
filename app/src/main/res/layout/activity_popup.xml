@@ -71,7 +71,7 @@
 
 
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/sound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -84,12 +84,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.704" />
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/music"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:thumb="@drawable/off_slide_button"
-        android:track="@drawable/slide_bar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.743"

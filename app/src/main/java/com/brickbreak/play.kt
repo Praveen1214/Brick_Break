@@ -11,11 +11,14 @@ import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
 import android.widget.ImageView
-import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.edit
 import androidx.activity.enableEdgeToEdge
+import android.widget.Switch
+
+
+
 
 class play : AppCompatActivity() {
 
@@ -58,9 +61,8 @@ class play : AppCompatActivity() {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.activity_popup)
 
-        val musicSwitch : Switch = dialog.findViewById(R.id.music)
-
-        val soundSwitch : Switch = dialog.findViewById(R.id.sound)
+        val musicSwitch: SwitchCompat = dialog.findViewById(R.id.music)
+        val soundSwitch: SwitchCompat = dialog.findViewById(R.id.sound)
 
 
         // Set initial state of switches based on saved preferences
